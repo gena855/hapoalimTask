@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-service
+  namespace: flask
+  labels:
+    env  : homeTask
+    owner: Genadi
+spec:
+  selector:
+    project: {{ .Release.Name }}    # Selecting PODS with those Labels
+  ports:
+    - name      : {{ .Release.Name }}-listener
+      protocol  : TCP
+      port      : {{ .Values.service.port }}  # Port on POD
+      nodePort  : {{ .Values.service.nodePort }} # Port on localhost
+  type: {{ .Values.service.type }}

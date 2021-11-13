@@ -1,0 +1,33 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deploy
+  namespace: flask
+  labels:
+    app : {{ .Release.Name }}-deploy
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      project: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        project: {{ .Release.Name }}   # Service will look for those PODS Labels!!!
+    spec:
+      containers:
+        - name : {{ .Release.Name }}-flask
+          image: {{ .Values.image.repository }}
+          ports:
+            - containerPort: 5000
+          env:
+          - name: MYVAR
+            value: "ENV-HELLO"
+          volumeMounts:
+          - name: secret
+            mountPath: "/var/secrets"
+            readOnly: true
+      volumes:
+      - name: secret
+        secret:
+          secretName: flask-secret        
